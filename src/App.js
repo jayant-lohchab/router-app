@@ -1,10 +1,16 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import RootLayout from "./pages/Root";
-import EventPage from "./pages/EventsPage";
-import EventDetailPage from "./pages/EventDetailPage";
+import EventPage, { loader as eventsLoader } from "./pages/EventsPage";
+import EventDetailPage, {
+  loader as eventDetailLoader,
+  action as deleteEventAction
+} from "./pages/EventDetailPage";
 import NewEventPage from "./pages/NewEventPage";
 import EditEventPage from "./pages/EditEventPage";
+import EventRootLayout from "./pages/EventsRoot";
+import ErrorPage from "./pages/Error";
+import {action as manipulateEventAction} from "./components/EventForm"
 
 // Challenge / Exercise
 
@@ -32,12 +38,36 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
+    errorElement: <ErrorPage />,
     children: [
-      { path: "", element: <HomePage /> },
-      { path: "events", element: <EventPage /> },
-      { path: "events/:id", element: <EventDetailPage /> },
-      { path: "events/new", element: <NewEventPage /> },
-      { path: "events/:id/edit", element: <EditEventPage /> },
+      { index: true, element: <HomePage /> },
+      {
+        path: "events",
+        element: <EventRootLayout />,
+
+        children: [
+          {
+            index: true,
+            element: <EventPage />,
+            loader: eventsLoader,
+          },
+          {
+            path: ":id",
+            loader: eventDetailLoader,
+            id:"event-detail",
+            children: [
+              {
+                index: true,
+                element: <EventDetailPage />,
+                action: deleteEventAction
+              },
+              { path: "edit", element: <EditEventPage /> ,action:manipulateEventAction },
+            ],
+          },
+
+          { path: "new", element: <NewEventPage />,action:manipulateEventAction },
+        ],
+      },
     ],
   },
 ]);

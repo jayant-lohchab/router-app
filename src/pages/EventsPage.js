@@ -1,26 +1,32 @@
-import { Link } from "react-router-dom";
+import { useLoaderData, json } from "react-router-dom";
+import EventsList from "../components/EventsList";
 
-const DUMMY_EVENTS = [
-  { id: "E1", title: "First Event" },
-  { id: "E2", title: "Second Event" },
-  { id: "E3", title: "Third Event" },
-];
-
-const EventPage = () => {
+function EventsPage() {
+  const data = useLoaderData();
+  if (data.isError) {
+    return <p>{data.message}</p>;
+  }
+  const events = data.events;
   return (
     <>
-      <h1>This is Events Page</h1>
-      <main>
-        <ul>
-          {DUMMY_EVENTS.map((event) => (
-            <li key={event.id}>
-              <Link to={`/events/${event.id}`}>{event.title}</Link>
-            </li>
-          ))}
-        </ul>
-      </main>
+      <EventsList events={events} />
     </>
   );
-};
+}
 
-export default EventPage;
+export default EventsPage;
+
+export const loader = async () => {
+  const response = await fetch("http://localhost:8080/events");
+
+  if (!response.ok) {
+    //...
+    // return {isError:true,message:"something went wrong"};
+    // throw new Response(JSON.stringify({ message: "This is a 500 error" }), {
+    //   status: 500,
+    // });
+    throw json({ message: "This is a 500 error" }, { status: 500 });
+  } else {
+    return response;
+  }
+};
