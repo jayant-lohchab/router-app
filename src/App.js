@@ -11,6 +11,7 @@ import EditEventPage from "./pages/EditEventPage";
 import EventRootLayout from "./pages/EventsRoot";
 import ErrorPage from "./pages/Error";
 import {action as manipulateEventAction} from "./components/EventForm"
+import AboutPage from "./pages/AboutPage";
 
 // Challenge / Exercise
 
@@ -68,6 +69,7 @@ const router = createBrowserRouter([
           { path: "new", element: <NewEventPage />,action:manipulateEventAction },
         ],
       },
+      { path: "about" ,element: <AboutPage/>},
     ],
   },
 ]);
